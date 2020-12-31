@@ -2,7 +2,7 @@ module Example.Random where
 import Prelude
 import Data.Int (toNumber)
 import Data.Array ((..), mapWithIndex, insertAt, foldl)
-import Data.Array.NonEmpty (NonEmptyArray, cons')
+import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as N
 import Data.Traversable (sequence)
 import Data.Maybe(Maybe(..), fromMaybe)
@@ -31,7 +31,7 @@ shuffle array = do
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
 cards ∷ NonEmptyArray Card
-cards = cons' Ace [Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
+cards = N.cons' Ace [Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
 
 type State = {
     dice ∷ Int,
