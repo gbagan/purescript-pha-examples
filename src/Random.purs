@@ -20,7 +20,7 @@ import Pha.Util (pc)
 
 randomPick ∷ ∀a. NonEmptyArray a → Effect a
 randomPick array = do
-    n <- liftEffect $ randomInt 0 (N.length array - 1)
+    n <- randomInt 0 (N.length array - 1)
     pure $ fromMaybe (N.head array) (N.index array n)
 
 shuffle ∷ ∀a. Array a → Effect (Array a)
