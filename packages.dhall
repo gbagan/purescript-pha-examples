@@ -7,7 +7,7 @@ let additions =
       { pha =
         { dependencies = [ "aff", "free", "web-dom", "web-html", "web-uievents" ]
         , repo = "https://github.com/gbagan/purescript-pha.git"
-        , version = "master"
+        , version = "v0.7.0"
         }
       }
 

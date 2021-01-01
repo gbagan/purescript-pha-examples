@@ -11,11 +11,11 @@ import Effect.Random (randomInt)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Pha.Update (Update, get, modify)
-import Pha as H
 import Pha.App (app)
-import Pha.Elements as HH
-import Pha.Events as E
-import Pha.Util (pc)
+import Pha.Html (Html)
+import Pha.Html as H
+import Pha.Html.Events as E
+import Pha.Html.Util (pc)
 
 
 randomPick ∷ ∀a. NonEmptyArray a → Effect a
@@ -76,24 +76,24 @@ viewCard Jack  = "🂫"
 viewCard Queen = "🂭"
 viewCard King  = "🂮"
 
-view ∷ State → H.VDom Msg
+view ∷ State → Html Msg
 view {dice, puzzle, card} =
-        HH.div [] [
-            HH.div [H.class' "counter" true] [H.text $ show dice],
-            HH.button [E.onclick RollDice] [H.text "Roll dice"],
+        H.div [] [
+            H.div [H.class' "counter" true] [H.text $ show dice],
+            H.button [E.onclick RollDice] [H.text "Roll dice"],
 
-            HH.div [H.style "font-size" "12em" ] [H.text $ viewCard card],
-            HH.button [E.onclick DrawCard] [H.text "Draw" ],
+            H.div [H.style "font-size" "12em" ] [H.text $ viewCard card],
+            H.button [E.onclick DrawCard] [H.text "Draw" ],
 
             H.keyed "div" [H.class_ "puzzle"] (
                 puzzle # mapWithIndex \i j → show i /\
-                    HH.div [
+                    H.div [
                         H.class' "puzzle-item" true,
                         H.style "left" $ pc (0.25 * toNumber (j / 4)),
                         H.style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
                     ] [H.text $ show i]
             ),
-            HH.button [E.onclick ShufflePuzzle] [H.text "Shuffle"]
+            H.button [E.onclick ShufflePuzzle] [H.text "Shuffle"]
         ]
 
 main ∷ Effect Unit

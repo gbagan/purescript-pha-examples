@@ -7,12 +7,11 @@ import Effect.Aff.Class (liftAff)
 import Affjax as AX
 import Affjax.ResponseFormat as ResponseFormat
 import Data.Argonaut.Decode (decodeJson, (.:))
-import Pha (VDom, text, style)
 import Pha.App (app)
 import Pha.Update (Update, modify)
-import Pha.Elements (div, h2, button, img)
-import Pha.Attributes (src)
-import Pha.Events (onclick)
+import Pha.Html (Html, text, style, div, h2, button, img)
+import Pha.Html.Attributes (src)
+import Pha.Html.Events (onclick)
 
 data State = Failure | Loading | Success String
 
@@ -35,14 +34,14 @@ update RequestCat = do
 
     modify (const status)
 
-view ∷ State → VDom Msg
+view ∷ State → Html Msg
 view st =   
     div [] 
     [   h2 [] [text "Random Cats"]
     ,   viewGif st
     ]
 
-viewGif ∷ State → VDom Msg
+viewGif ∷ State → Html Msg
 viewGif Failure =
     div [] 
     [   text "I could not load a random cat for some reason. "
