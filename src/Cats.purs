@@ -8,10 +8,10 @@ import Affjax as AX
 import Affjax.ResponseFormat as ResponseFormat
 import Data.Argonaut.Decode (decodeJson, (.:))
 import Pha.App (app)
-import Pha.Update (Update, modify)
+import Pha.Update (Update, modify_)
 import Pha.Html (Html, text, style, div, h2, button, img)
 import Pha.Html.Attributes (src)
-import Pha.Html.Events (onclick)
+import Pha.Html.Events (onClick)
 
 data State = Failure | Loading | Success String
 
@@ -21,9 +21,9 @@ data Msg = RequestCat
 state ∷ State
 state = Loading
 
-update ∷ Msg → Update State
+update ∷ Msg → Update State Unit
 update RequestCat = do
-    modify (const Loading)
+    modify_ (const Loading)
     res ← liftAff $ AX.get ResponseFormat.json "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
     let status = case res of
                     Left _  → Failure
@@ -32,7 +32,7 @@ update RequestCat = do
                             Left _ → Failure
                             Right url → Success url
 
-    modify (const status)
+    modify_ (const status)
 
 view ∷ State → Html Msg
 view st =   
@@ -45,12 +45,12 @@ viewGif ∷ State → Html Msg
 viewGif Failure =
     div [] 
     [   text "I could not load a random cat for some reason. "
-    ,   button [onclick RequestCat] [ text "Try Again!" ]
+    ,   button [onClick RequestCat] [ text "Try Again!" ]
     ]
 viewGif Loading = text "Loading..."
 viewGif (Success url) =
     div [] 
-    [   button [ onclick RequestCat, style "display" "block" ] [ text "More Please!" ]
+    [   button [ onClick RequestCat, style "display" "block" ] [ text "More Please!" ]
     ,   img [ src url ] []
     ]
 
@@ -59,6 +59,6 @@ main = app
     {   init: {state, action: Just RequestCat}
     ,   view
     ,   update
-    ,   subscriptions: const []
+    ,   subscriptions: []
     ,   selector: "#root"
     }

@@ -10,7 +10,7 @@ import Data.Tuple.Nested ((/\))
 import Effect.Random (randomInt)
 import Effect (Effect)
 import Effect.Class (liftEffect)
-import Pha.Update (Update, get, modify)
+import Pha.Update (Update, gets, modify_)
 import Pha.App (app)
 import Pha.Html (Html)
 import Pha.Html as H
@@ -49,17 +49,17 @@ state = {
     card: Ace
 }
 
-update ∷ Msg → Update State
+update ∷ Msg → Update State Unit
 update RollDice = do
     n <- liftEffect $ randomInt 1 6
-    modify _{dice = n}
+    modify_ _{dice = n}
 update DrawCard = do
     card <- liftEffect $ randomPick cards
-    modify _{card = card}
+    modify_ _{card = card}
 update ShufflePuzzle = do
-    p <- get <#> _.puzzle
+    p <- gets _.puzzle
     p2 <- liftEffect $ shuffle p
-    modify _{puzzle = p2}
+    modify_ _{puzzle = p2}
 
 viewCard ∷ Card → String
 viewCard Ace   = "🂡"
@@ -80,10 +80,10 @@ view ∷ State → Html Msg
 view {dice, puzzle, card} =
         H.div [] [
             H.div [H.class' "counter" true] [H.text $ show dice],
-            H.button [E.onclick RollDice] [H.text "Roll dice"],
+            H.button [E.onClick RollDice] [H.text "Roll dice"],
 
             H.div [H.style "font-size" "12em" ] [H.text $ viewCard card],
-            H.button [E.onclick DrawCard] [H.text "Draw" ],
+            H.button [E.onClick DrawCard] [H.text "Draw" ],
 
             H.keyed "div" [H.class_ "puzzle"] (
                 puzzle # mapWithIndex \i j → show i /\
@@ -93,7 +93,7 @@ view {dice, puzzle, card} =
                         H.style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
                     ] [H.text $ show i]
             ),
-            H.button [E.onclick ShufflePuzzle] [H.text "Shuffle"]
+            H.button [E.onClick ShufflePuzzle] [H.text "Shuffle"]
         ]
 
 main ∷ Effect Unit
@@ -101,6 +101,6 @@ main = app {
     init: {state, action: Just RollDice},
     view,
     update,
-    subscriptions: const [],
+    subscriptions: [],
     selector: "#root"
 }

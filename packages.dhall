@@ -5,9 +5,9 @@ let overrides = {=}
 
 let additions =
       { pha =
-        { dependencies = [ "aff", "free", "web-dom", "web-html", "web-uievents" ]
+        { dependencies = [ "aff", "free", "web-dom", "web-html", "web-uievents", "unsafe-reference" ]
         , repo = "https://github.com/gbagan/purescript-pha.git"
-        , version = "v0.7.0"
+        , version = "v0.8.1"
         }
       }
 

@@ -7,7 +7,7 @@ import Data.Tuple.Nested ((/\))
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Pha.App (app)
-import Pha.Update (Update, modify, delay)
+import Pha.Update (Update, modify_, delay)
 import Pha.Html (Html)
 import Pha.Html as H
 import Pha.Html.Events as E
@@ -22,11 +22,11 @@ state = 0
 
 data Msg = Increment | DelayedIncrement
 
-update ∷ Msg → Update State
-update Increment = modify (_ + 1)
+update ∷ Msg → Update State Unit
+update Increment = modify_ (_ + 1)
 update DelayedIncrement = do
     delay (Milliseconds 1000.0)
-    modify (_ + 1)
+    modify_ (_ + 1)
 
 spanCounter :: Int -> Html Msg
 spanCounter v = H.span [] [H.text $ show v]
@@ -35,8 +35,8 @@ view ∷ State → Html Msg
 view counter =
     H.div []
     [   H.div [H.class_ "counter"] [H.text $ show counter]
-    ,       H.button [E.onclick Increment] [H.text "Increment"]
-    ,       H.button [E.onclick DelayedIncrement] [H.text "Delayed Increment"]
+    ,       H.button [E.onClick Increment] [H.text "Increment"]
+    ,       H.button [E.onClick DelayedIncrement] [H.text "Delayed Increment"]
     ,   H.div []
         [   H.span [] [H.text "green when the counter is even"]
         ,   H.div
@@ -91,6 +91,6 @@ main = app {
     init: {state, action: Nothing},
     view,
     update,
-    subscriptions: const [Subs.onKeyDown keyDownHandler],
+    subscriptions: [Subs.onKeyDown keyDownHandler],
     selector: "#root"
 }

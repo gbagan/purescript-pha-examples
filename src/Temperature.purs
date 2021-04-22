@@ -32,9 +32,9 @@ view ∷ State → Html Msg
 view {celsius, fahrenheit} = 
     H.div []
     [   H.label []
-        [   H.input [P.type_ "text", H.attr "size" "5", E.onvaluechange ChangeCelsius, P.value celsius]
+        [   H.input [P.type_ "text", H.attr "size" "5", E.onValueChange ChangeCelsius, P.value celsius]
         ,   H.span [] [H.text "°C"]
-        ,   H.input [P.type_ "text", H.attr "size" "5", E.onvaluechange ChangeFahrenheit, P.value fahrenheit]
+        ,   H.input [P.type_ "text", H.attr "size" "5", E.onValueChange ChangeFahrenheit, P.value fahrenheit]
         ,   H.span [] [H.text "°F"]
         ]
     ]
