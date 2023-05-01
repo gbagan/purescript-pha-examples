@@ -102,6 +102,5 @@ main = app
   { init: {model, msg: Just RollDice}
   , view
   , update
-  , eval: identity
   , selector: "#root"
   }
