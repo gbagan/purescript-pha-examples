@@ -26,7 +26,7 @@ update ∷ Msg → Update Model Msg Aff Unit
 update RequestCat = do
   put Loading
   {status, json} ← liftAff $ fetch "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat" {}
-  if status == 200 
+  if status /= 200 
   then
     put Failure
   else do

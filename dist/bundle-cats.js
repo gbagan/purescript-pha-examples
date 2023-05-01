@@ -449,7 +449,7 @@
   };
 
   // output/Effect/index.js
-  var $runtime_lazy = function(name15, moduleName, init3) {
+  var $runtime_lazy = function(name15, moduleName, init4) {
     var state3 = 0;
     var val;
     return function(lineNumber) {
@@ -458,7 +458,7 @@
       if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
       state3 = 1;
-      val = init3();
+      val = init4();
       state3 = 2;
       return val;
     };
@@ -696,9 +696,9 @@
 
   // output/Data.Foldable/foreign.js
   var foldrArray = function(f) {
-    return function(init3) {
+    return function(init4) {
       return function(xs) {
-        var acc = init3;
+        var acc = init4;
         var len = xs.length;
         for (var i = len - 1; i >= 0; i--) {
           acc = f(xs[i])(acc);
@@ -708,9 +708,9 @@
     };
   };
   var foldlArray = function(f) {
-    return function(init3) {
+    return function(init4) {
       return function(xs) {
-        var acc = init3;
+        var acc = init4;
         var len = xs.length;
         for (var i = 0; i < len; i++) {
           acc = f(acc)(xs[i]);
@@ -2589,7 +2589,7 @@
   };
 
   // output/Effect.Aff/index.js
-  var $runtime_lazy2 = function(name15, moduleName, init3) {
+  var $runtime_lazy2 = function(name15, moduleName, init4) {
     var state3 = 0;
     var val;
     return function(lineNumber) {
@@ -2598,7 +2598,7 @@
       if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
       state3 = 1;
-      val = init3();
+      val = init4();
       state3 = 2;
       return val;
     };
@@ -3257,7 +3257,7 @@
   };
 
   // output/Control.Monad.Free/index.js
-  var $runtime_lazy3 = function(name15, moduleName, init3) {
+  var $runtime_lazy3 = function(name15, moduleName, init4) {
     var state3 = 0;
     var val;
     return function(lineNumber) {
@@ -3266,7 +3266,7 @@
       if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
       state3 = 1;
-      val = init3();
+      val = init4();
       state3 = 2;
       return val;
     };
@@ -3923,7 +3923,7 @@
   }
 
   // output/Pha.App/index.js
-  var $runtime_lazy4 = function(name15, moduleName, init3) {
+  var $runtime_lazy4 = function(name15, moduleName, init4) {
     var state3 = 0;
     var val;
     return function(lineNumber) {
@@ -3932,7 +3932,7 @@
       if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
       state3 = 1;
-      val = init3();
+      val = init4();
       state3 = 2;
       return val;
     };
@@ -4162,15 +4162,15 @@
       }), style("display")("block")])([text3("More Please!")]), img([src9(v.value0)])([])]);
     }
     ;
-    throw new Error("Failed pattern match at Example.Cats (line 45, column 1 - line 45, column 27): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at Example.Cats (line 43, column 1 - line 43, column 27): " + [v.constructor.name]);
   };
-  var view = function(model1) {
-    return div2([])([h2([])([text3("Random Cats")]), viewGif(model1)]);
+  var view = function(model) {
+    return div2([])([h2([])([text3("Random Cats")]), viewGif(model)]);
   };
   var update = function(v) {
     return discard3(put2(Loading2.value))(function() {
       return bind7(liftAff2(fetch4("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat")({})))(function(v1) {
-        var $44 = v1.status === 200;
+        var $44 = v1.status !== 200;
         if ($44) {
           return put2(Failure.value);
         }
@@ -4181,13 +4181,13 @@
       });
     });
   };
-  var model = /* @__PURE__ */ function() {
+  var init3 = /* @__PURE__ */ function() {
     return Loading2.value;
   }();
   var main = /* @__PURE__ */ function() {
     return app(monadAff)({
       init: {
-        model,
+        model: init3,
         msg: new Just(RequestCat.value)
       },
       view,
