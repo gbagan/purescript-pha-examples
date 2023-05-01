@@ -58,6 +58,5 @@ main = app
   { init: {model: init, msg: Just RequestCat}
   , view
   , update
-  , eval: identity
   , selector: "#root"
   }
