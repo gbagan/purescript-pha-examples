@@ -9,18 +9,18 @@ import Pha.Html as H
 import Pha.Html.Attributes as P
 import Pha.Html.Events as E
 
-type State =
-    {   celsius ∷ String
-    ,   fahrenheit ∷ String
-    }
+type Model =
+  { celsius ∷ String
+  , fahrenheit ∷ String
+  }
 
 data Msg = ChangeCelsius String | ChangeFahrenheit String
 
 -- initial state
-init ∷ State
+init ∷ Model
 init = {celsius: "", fahrenheit: ""}
 
-update ∷ Msg → State → State
+update ∷ Msg → Model → Model
 update (ChangeCelsius c) = _{ celsius    = c
                             , fahrenheit = Number.fromString c # maybe "" \x → show (x * 9.0 / 5.0 + 32.0)
                             }
@@ -28,14 +28,14 @@ update (ChangeFahrenheit f) = _{ celsius    = Number.fromString f # maybe "" \x 
                                , fahrenheit = f
                                }
 
-view ∷ State → Html Msg
+view ∷ Model → Html Msg
 view {celsius, fahrenheit} = 
-    H.div []
-    [   H.label []
-        [   H.input [P.type_ "text", H.attr "size" "5", E.onValueChange ChangeCelsius, P.value celsius]
-        ,   H.span [] [H.text "°C"]
-        ,   H.input [P.type_ "text", H.attr "size" "5", E.onValueChange ChangeFahrenheit, P.value fahrenheit]
-        ,   H.span [] [H.text "°F"]
+  H.div []
+    [ H.label []
+        [ H.input [P.type_ "text", H.attr "size" "5", E.onValueChange ChangeCelsius, P.value celsius]
+        , H.span [] [H.text "°C"]
+        , H.input [P.type_ "text", H.attr "size" "5", E.onValueChange ChangeFahrenheit, P.value fahrenheit]
+        , H.span [] [H.text "°F"]
         ]
     ]
 

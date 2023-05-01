@@ -1,4 +1,5 @@
-module Example.Counter where
+module Example.Counter
+  where
 import Prelude hiding (div)
 import Effect (Effect)
 import Pha.Html (Html)
@@ -6,22 +7,22 @@ import Pha.App (sandbox)
 import Pha.Html as H
 import Pha.Html.Events as E
 
-type State = Int
+type Model = Int
 data Msg = Increment | Decrement
 
-init ∷ State
+init ∷ Model
 init = 0
 
-update ∷ Msg → State → State
+update ∷ Msg → Model → Model
 update Increment n = n + 1
 update Decrement n = n - 1
 
-view ∷ State → Html Msg
+view ∷ Model → Html Msg
 view counter = 
-    H.div []
-    [   H.button [E.onClick Decrement] [H.text "-"]
-    ,   H.span [] [H.text $ show counter]
-    ,   H.button [E.onClick Increment] [H.text "+"]
+  H.div []
+    [ H.button [E.onClick \_ → Decrement] [H.text "-"]
+    , H.span [] [H.text $ show counter]
+    , H.button [E.onClick \_ → Increment] [H.text "+"]
     ]
 
 main ∷ Effect Unit
