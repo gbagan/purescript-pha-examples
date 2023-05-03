@@ -3,14 +3,13 @@ import Prelude hiding (div)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Aff (Aff)
-import Effect.Aff.Class (liftAff)
 import Fetch (fetch)
 import Fetch.Argonaut.Json (fromJson)
 import Pha.App (app)
-import Pha.Update (Update, put)
 import Pha.Html (Html, text, style, div, h2, button, img)
 import Pha.Html.Attributes (src)
 import Pha.Html.Events (onClick)
+import Pha.Update (Update, liftEffect, put)
 
 data Model = Failure | Loading | Success String
 
