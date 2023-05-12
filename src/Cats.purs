@@ -9,7 +9,7 @@ import Pha.App (app)
 import Pha.Html (Html, text, style, div, h2, button, img)
 import Pha.Html.Attributes (src)
 import Pha.Html.Events (onClick)
-import Pha.Update (Update, liftEffect, put)
+import Pha.Update (Update, liftAff, put)
 
 data Model = Failure | Loading | Success String
 
