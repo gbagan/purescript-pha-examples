@@ -229,12 +229,12 @@
 
   // output/Control.Monad/index.js
   var ap = function(dictMonad) {
-    var bind3 = bind(dictMonad.Bind1());
+    var bind4 = bind(dictMonad.Bind1());
     var pure3 = pure(dictMonad.Applicative0());
     return function(f) {
       return function(a) {
-        return bind3(f)(function(f$prime) {
-          return bind3(a)(function(a$prime) {
+        return bind4(f)(function(f$prime) {
+          return bind4(a)(function(a$prime) {
             return pure3(f$prime(a$prime));
           });
         });
@@ -459,6 +459,18 @@
     };
   }();
 
+  // output/Data.Map.Internal/index.js
+  var Leaf = /* @__PURE__ */ function() {
+    function Leaf2() {
+    }
+    ;
+    Leaf2.value = new Leaf2();
+    return Leaf2;
+  }();
+  var empty4 = /* @__PURE__ */ function() {
+    return Leaf.value;
+  }();
+
   // output/Effect.Aff/foreign.js
   var Aff = function() {
     var EMPTY = {};
@@ -507,18 +519,18 @@
         }, 0);
       }
     }
-    function runSync(left, right, eff) {
+    function runSync(left2, right2, eff) {
       try {
-        return right(eff());
+        return right2(eff());
       } catch (error2) {
-        return left(error2);
+        return left2(error2);
       }
     }
-    function runAsync(left, eff, k) {
+    function runAsync(left2, eff, k) {
       try {
         return eff(k)();
       } catch (error2) {
-        k(left(error2))();
+        k(left2(error2))();
         return nonCanceler;
       }
     }
@@ -636,7 +648,7 @@
     function Fiber(util, supervisor, aff) {
       var runTick = 0;
       var status = SUSPENDED;
-      var step2 = aff;
+      var step3 = aff;
       var fail = null;
       var interrupt = null;
       var bhead = null;
@@ -656,7 +668,7 @@
             case STEP_BIND:
               status = CONTINUE;
               try {
-                step2 = bhead(step2);
+                step3 = bhead(step3);
                 if (btail === null) {
                   bhead = null;
                 } else {
@@ -666,47 +678,47 @@
               } catch (e) {
                 status = RETURN;
                 fail = util.left(e);
-                step2 = null;
+                step3 = null;
               }
               break;
             case STEP_RESULT:
-              if (util.isLeft(step2)) {
+              if (util.isLeft(step3)) {
                 status = RETURN;
-                fail = step2;
-                step2 = null;
+                fail = step3;
+                step3 = null;
               } else if (bhead === null) {
                 status = RETURN;
               } else {
                 status = STEP_BIND;
-                step2 = util.fromRight(step2);
+                step3 = util.fromRight(step3);
               }
               break;
             case CONTINUE:
-              switch (step2.tag) {
+              switch (step3.tag) {
                 case BIND:
                   if (bhead) {
                     btail = new Aff2(CONS, bhead, btail);
                   }
-                  bhead = step2._2;
+                  bhead = step3._2;
                   status = CONTINUE;
-                  step2 = step2._1;
+                  step3 = step3._1;
                   break;
                 case PURE:
                   if (bhead === null) {
                     status = RETURN;
-                    step2 = util.right(step2._1);
+                    step3 = util.right(step3._1);
                   } else {
                     status = STEP_BIND;
-                    step2 = step2._1;
+                    step3 = step3._1;
                   }
                   break;
                 case SYNC:
                   status = STEP_RESULT;
-                  step2 = runSync(util.left, util.right, step2._1);
+                  step3 = runSync(util.left, util.right, step3._1);
                   break;
                 case ASYNC:
                   status = PENDING;
-                  step2 = runAsync(util.left, step2._1, function(result2) {
+                  step3 = runAsync(util.left, step3._1, function(result2) {
                     return function() {
                       if (runTick !== localRunTick) {
                         return;
@@ -717,7 +729,7 @@
                           return;
                         }
                         status = STEP_RESULT;
-                        step2 = result2;
+                        step3 = result2;
                         run2(runTick);
                       });
                     };
@@ -725,46 +737,46 @@
                   return;
                 case THROW:
                   status = RETURN;
-                  fail = util.left(step2._1);
-                  step2 = null;
+                  fail = util.left(step3._1);
+                  step3 = null;
                   break;
                 case CATCH:
                   if (bhead === null) {
-                    attempts = new Aff2(CONS, step2, attempts, interrupt);
+                    attempts = new Aff2(CONS, step3, attempts, interrupt);
                   } else {
-                    attempts = new Aff2(CONS, step2, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
+                    attempts = new Aff2(CONS, step3, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
                   }
                   bhead = null;
                   btail = null;
                   status = CONTINUE;
-                  step2 = step2._1;
+                  step3 = step3._1;
                   break;
                 case BRACKET:
                   bracketCount++;
                   if (bhead === null) {
-                    attempts = new Aff2(CONS, step2, attempts, interrupt);
+                    attempts = new Aff2(CONS, step3, attempts, interrupt);
                   } else {
-                    attempts = new Aff2(CONS, step2, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
+                    attempts = new Aff2(CONS, step3, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
                   }
                   bhead = null;
                   btail = null;
                   status = CONTINUE;
-                  step2 = step2._1;
+                  step3 = step3._1;
                   break;
                 case FORK:
                   status = STEP_RESULT;
-                  tmp = Fiber(util, supervisor, step2._2);
+                  tmp = Fiber(util, supervisor, step3._2);
                   if (supervisor) {
                     supervisor.register(tmp);
                   }
-                  if (step2._1) {
+                  if (step3._1) {
                     tmp.run();
                   }
-                  step2 = util.right(tmp);
+                  step3 = util.right(tmp);
                   break;
                 case SEQ:
                   status = CONTINUE;
-                  step2 = sequential2(util, supervisor, step2._1);
+                  step3 = sequential2(util, supervisor, step3._1);
                   break;
               }
               break;
@@ -773,7 +785,7 @@
               btail = null;
               if (attempts === null) {
                 status = COMPLETED;
-                step2 = interrupt || fail || step2;
+                step3 = interrupt || fail || step3;
               } else {
                 tmp = attempts._3;
                 attempt = attempts._1;
@@ -784,7 +796,7 @@
                       status = RETURN;
                     } else if (fail) {
                       status = CONTINUE;
-                      step2 = attempt._2(util.fromLeft(fail));
+                      step3 = attempt._2(util.fromLeft(fail));
                       fail = null;
                     }
                     break;
@@ -795,43 +807,43 @@
                       bhead = attempt._1;
                       btail = attempt._2;
                       status = STEP_BIND;
-                      step2 = util.fromRight(step2);
+                      step3 = util.fromRight(step3);
                     }
                     break;
                   case BRACKET:
                     bracketCount--;
                     if (fail === null) {
-                      result = util.fromRight(step2);
+                      result = util.fromRight(step3);
                       attempts = new Aff2(CONS, new Aff2(RELEASE, attempt._2, result), attempts, tmp);
                       if (interrupt === tmp || bracketCount > 0) {
                         status = CONTINUE;
-                        step2 = attempt._3(result);
+                        step3 = attempt._3(result);
                       }
                     }
                     break;
                   case RELEASE:
-                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step2, fail), attempts, interrupt);
+                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step3, fail), attempts, interrupt);
                     status = CONTINUE;
                     if (interrupt && interrupt !== tmp && bracketCount === 0) {
-                      step2 = attempt._1.killed(util.fromLeft(interrupt))(attempt._2);
+                      step3 = attempt._1.killed(util.fromLeft(interrupt))(attempt._2);
                     } else if (fail) {
-                      step2 = attempt._1.failed(util.fromLeft(fail))(attempt._2);
+                      step3 = attempt._1.failed(util.fromLeft(fail))(attempt._2);
                     } else {
-                      step2 = attempt._1.completed(util.fromRight(step2))(attempt._2);
+                      step3 = attempt._1.completed(util.fromRight(step3))(attempt._2);
                     }
                     fail = null;
                     bracketCount++;
                     break;
                   case FINALIZER:
                     bracketCount++;
-                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step2, fail), attempts, interrupt);
+                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step3, fail), attempts, interrupt);
                     status = CONTINUE;
-                    step2 = attempt._1;
+                    step3 = attempt._1;
                     break;
                   case FINALIZED:
                     bracketCount--;
                     status = RETURN;
-                    step2 = attempt._1;
+                    step3 = attempt._1;
                     fail = attempt._2;
                     break;
                 }
@@ -841,7 +853,7 @@
               for (var k in joins) {
                 if (joins.hasOwnProperty(k)) {
                   rethrow = rethrow && joins[k].rethrow;
-                  runEff(joins[k].handler(step2));
+                  runEff(joins[k].handler(step3));
                 }
               }
               joins = null;
@@ -849,10 +861,10 @@
                 setTimeout(function() {
                   throw util.fromLeft(fail);
                 }, 0);
-              } else if (util.isLeft(step2) && rethrow) {
+              } else if (util.isLeft(step3) && rethrow) {
                 setTimeout(function() {
                   if (rethrow) {
-                    throw util.fromLeft(step2);
+                    throw util.fromLeft(step3);
                   }
                 }, 0);
               }
@@ -869,7 +881,7 @@
         return function() {
           if (status === COMPLETED) {
             rethrow = rethrow && join3.rethrow;
-            join3.handler(step2)();
+            join3.handler(step3)();
             return function() {
             };
           }
@@ -900,7 +912,7 @@
             case SUSPENDED:
               interrupt = util.left(error2);
               status = COMPLETED;
-              step2 = interrupt;
+              step3 = interrupt;
               run2(runTick);
               break;
             case PENDING:
@@ -909,10 +921,10 @@
               }
               if (bracketCount === 0) {
                 if (status === PENDING) {
-                  attempts = new Aff2(CONS, new Aff2(FINALIZER, step2(error2)), attempts, interrupt);
+                  attempts = new Aff2(CONS, new Aff2(FINALIZER, step3(error2)), attempts, interrupt);
                 }
                 status = RETURN;
-                step2 = null;
+                step3 = null;
                 fail = null;
                 run2(++runTick);
               }
@@ -923,7 +935,7 @@
               }
               if (bracketCount === 0) {
                 status = RETURN;
-                step2 = null;
+                step3 = null;
                 fail = null;
               }
           }
@@ -971,8 +983,8 @@
       var interrupt = null;
       var root = EMPTY;
       function kill(error2, par2, cb2) {
-        var step2 = par2;
-        var head = null;
+        var step3 = par2;
+        var head2 = null;
         var tail = null;
         var count = 0;
         var kills2 = {};
@@ -980,10 +992,10 @@
         loop:
           while (true) {
             tmp = null;
-            switch (step2.tag) {
+            switch (step3.tag) {
               case FORKED:
-                if (step2._3 === EMPTY) {
-                  tmp = fibers[step2._1];
+                if (step3._3 === EMPTY) {
+                  tmp = fibers[step3._1];
                   kills2[count++] = tmp.kill(error2, function(result) {
                     return function() {
                       count--;
@@ -993,27 +1005,27 @@
                     };
                   });
                 }
-                if (head === null) {
+                if (head2 === null) {
                   break loop;
                 }
-                step2 = head._2;
+                step3 = head2._2;
                 if (tail === null) {
-                  head = null;
+                  head2 = null;
                 } else {
-                  head = tail._1;
+                  head2 = tail._1;
                   tail = tail._2;
                 }
                 break;
               case MAP:
-                step2 = step2._2;
+                step3 = step3._2;
                 break;
               case APPLY:
               case ALT:
-                if (head) {
-                  tail = new Aff2(CONS, head, tail);
+                if (head2) {
+                  tail = new Aff2(CONS, head2, tail);
                 }
-                head = step2;
-                step2 = step2._1;
+                head2 = step3;
+                step3 = step3._1;
                 break;
             }
           }
@@ -1028,13 +1040,13 @@
         }
         return kills2;
       }
-      function join2(result, head, tail) {
-        var fail, step2, lhs, rhs, tmp, kid;
+      function join2(result, head2, tail) {
+        var fail, step3, lhs, rhs, tmp, kid;
         if (util.isLeft(result)) {
           fail = result;
-          step2 = null;
+          step3 = null;
         } else {
-          step2 = result;
+          step3 = result;
           fail = null;
         }
         loop:
@@ -1046,30 +1058,30 @@
             if (interrupt !== null) {
               return;
             }
-            if (head === null) {
-              cb(fail || step2)();
+            if (head2 === null) {
+              cb(fail || step3)();
               return;
             }
-            if (head._3 !== EMPTY) {
+            if (head2._3 !== EMPTY) {
               return;
             }
-            switch (head.tag) {
+            switch (head2.tag) {
               case MAP:
                 if (fail === null) {
-                  head._3 = util.right(head._1(util.fromRight(step2)));
-                  step2 = head._3;
+                  head2._3 = util.right(head2._1(util.fromRight(step3)));
+                  step3 = head2._3;
                 } else {
-                  head._3 = fail;
+                  head2._3 = fail;
                 }
                 break;
               case APPLY:
-                lhs = head._1._3;
-                rhs = head._2._3;
+                lhs = head2._1._3;
+                rhs = head2._2._3;
                 if (fail) {
-                  head._3 = fail;
+                  head2._3 = fail;
                   tmp = true;
                   kid = killId++;
-                  kills[kid] = kill(early, fail === lhs ? head._2 : head._1, function() {
+                  kills[kid] = kill(early, fail === lhs ? head2._2 : head2._1, function() {
                     return function() {
                       delete kills[kid];
                       if (tmp) {
@@ -1088,33 +1100,33 @@
                 } else if (lhs === EMPTY || rhs === EMPTY) {
                   return;
                 } else {
-                  step2 = util.right(util.fromRight(lhs)(util.fromRight(rhs)));
-                  head._3 = step2;
+                  step3 = util.right(util.fromRight(lhs)(util.fromRight(rhs)));
+                  head2._3 = step3;
                 }
                 break;
               case ALT:
-                lhs = head._1._3;
-                rhs = head._2._3;
+                lhs = head2._1._3;
+                rhs = head2._2._3;
                 if (lhs === EMPTY && util.isLeft(rhs) || rhs === EMPTY && util.isLeft(lhs)) {
                   return;
                 }
                 if (lhs !== EMPTY && util.isLeft(lhs) && rhs !== EMPTY && util.isLeft(rhs)) {
-                  fail = step2 === lhs ? rhs : lhs;
-                  step2 = null;
-                  head._3 = fail;
+                  fail = step3 === lhs ? rhs : lhs;
+                  step3 = null;
+                  head2._3 = fail;
                 } else {
-                  head._3 = step2;
+                  head2._3 = step3;
                   tmp = true;
                   kid = killId++;
-                  kills[kid] = kill(early, step2 === lhs ? head._2 : head._1, function() {
+                  kills[kid] = kill(early, step3 === lhs ? head2._2 : head2._1, function() {
                     return function() {
                       delete kills[kid];
                       if (tmp) {
                         tmp = false;
                       } else if (tail === null) {
-                        join2(step2, null, null);
+                        join2(step3, null, null);
                       } else {
-                        join2(step2, tail._1, tail._2);
+                        join2(step3, tail._1, tail._2);
                       }
                     };
                   });
@@ -1126,9 +1138,9 @@
                 break;
             }
             if (tail === null) {
-              head = null;
+              head2 = null;
             } else {
-              head = tail._1;
+              head2 = tail._1;
               tail = tail._2;
             }
           }
@@ -1144,8 +1156,8 @@
       }
       function run2() {
         var status = CONTINUE;
-        var step2 = par;
-        var head = null;
+        var step3 = par;
+        var head2 = null;
         var tail = null;
         var tmp, fid;
         loop:
@@ -1154,37 +1166,37 @@
             fid = null;
             switch (status) {
               case CONTINUE:
-                switch (step2.tag) {
+                switch (step3.tag) {
                   case MAP:
-                    if (head) {
-                      tail = new Aff2(CONS, head, tail);
+                    if (head2) {
+                      tail = new Aff2(CONS, head2, tail);
                     }
-                    head = new Aff2(MAP, step2._1, EMPTY, EMPTY);
-                    step2 = step2._2;
+                    head2 = new Aff2(MAP, step3._1, EMPTY, EMPTY);
+                    step3 = step3._2;
                     break;
                   case APPLY:
-                    if (head) {
-                      tail = new Aff2(CONS, head, tail);
+                    if (head2) {
+                      tail = new Aff2(CONS, head2, tail);
                     }
-                    head = new Aff2(APPLY, EMPTY, step2._2, EMPTY);
-                    step2 = step2._1;
+                    head2 = new Aff2(APPLY, EMPTY, step3._2, EMPTY);
+                    step3 = step3._1;
                     break;
                   case ALT:
-                    if (head) {
-                      tail = new Aff2(CONS, head, tail);
+                    if (head2) {
+                      tail = new Aff2(CONS, head2, tail);
                     }
-                    head = new Aff2(ALT, EMPTY, step2._2, EMPTY);
-                    step2 = step2._1;
+                    head2 = new Aff2(ALT, EMPTY, step3._2, EMPTY);
+                    step3 = step3._1;
                     break;
                   default:
                     fid = fiberId++;
                     status = RETURN;
-                    tmp = step2;
-                    step2 = new Aff2(FORKED, fid, new Aff2(CONS, head, tail), EMPTY);
+                    tmp = step3;
+                    step3 = new Aff2(FORKED, fid, new Aff2(CONS, head2, tail), EMPTY);
                     tmp = Fiber(util, supervisor, tmp);
                     tmp.onComplete({
                       rethrow: false,
-                      handler: resolve(step2)
+                      handler: resolve(step3)
                     })();
                     fibers[fid] = tmp;
                     if (supervisor) {
@@ -1193,27 +1205,27 @@
                 }
                 break;
               case RETURN:
-                if (head === null) {
+                if (head2 === null) {
                   break loop;
                 }
-                if (head._1 === EMPTY) {
-                  head._1 = step2;
+                if (head2._1 === EMPTY) {
+                  head2._1 = step3;
                   status = CONTINUE;
-                  step2 = head._2;
-                  head._2 = EMPTY;
+                  step3 = head2._2;
+                  head2._2 = EMPTY;
                 } else {
-                  head._2 = step2;
-                  step2 = head;
+                  head2._2 = step3;
+                  step3 = head2;
                   if (tail === null) {
-                    head = null;
+                    head2 = null;
                   } else {
-                    head = tail._1;
+                    head2 = tail._1;
                     tail = tail._2;
                   }
                 }
             }
           }
-        root = step2;
+        root = step3;
         for (fid = 0; fid < fiberId; fid++) {
           fibers[fid].run();
         }
@@ -1300,13 +1312,13 @@
         return clearTimeout(t);
       }
     }
-    return function(right, ms) {
+    return function(right2, ms) {
       return Aff.Async(function(cb) {
         return function() {
-          var timer = setDelay(ms, cb(right()));
+          var timer = setDelay(ms, cb(right2()));
           return function() {
             return Aff.Sync(function() {
-              return right(clearDelay(ms, timer));
+              return right2(clearDelay(ms, timer));
             });
           };
         };
@@ -1319,17 +1331,8 @@
   var TEXT_NODE = 3;
   var merge = (a, b) => ({ ...a, ...b });
   var compose2 = (f, g) => f && g ? (x) => f(g(x)) : f || g;
-  var patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => {
-    if (key === "style") {
-      for (let k in merge(oldValue, newValue)) {
-        oldValue = newValue == null || newValue[k] == null ? "" : newValue[k];
-        if (k[0] === "-") {
-          node[key].setProperty(k, oldValue);
-        } else {
-          node[key][k] = oldValue;
-        }
-      }
-    } else if (key[0] === "o" && key[1] === "n") {
+  var patchProperty = (node, key, oldValue, newValue, listener, mapf) => {
+    if (key[0] === "o" && key[1] === "n") {
       const key2 = key.slice(2);
       if (!node.actions)
         node.actions = {};
@@ -1339,8 +1342,6 @@
       } else if (!oldValue) {
         node.addEventListener(key2, listener);
       }
-    } else if (!isSvg && key in node) {
-      node[key] = newValue;
     } else if (newValue == null || newValue === false || key === "class" && !newValue) {
       node.removeAttribute(key);
     } else {
@@ -1352,7 +1353,7 @@
     const props = vnode.props;
     const mapf2 = compose2(mapf, vnode.mapf);
     for (let k in props) {
-      patchProperty(node, k, null, props[k], listener, isSvg, mapf2);
+      patchProperty(node, k, null, props[k], listener, mapf2);
     }
     for (let i = 0, len = vnode.children.length; i < len; i++) {
       node.appendChild(
@@ -1378,7 +1379,7 @@
         node
       );
       if (oldVNode) {
-        parent2.removeChild(oldVNode.node);
+        oldVNode.node.remove();
       }
     } else {
       const oldVProps = oldVNode.props;
@@ -1390,9 +1391,7 @@
       mapf = compose2(mapf, newVNode.mapf);
       isSvg = isSvg || newVNode.tag === "svg";
       for (let i in merge(oldVProps, newVProps)) {
-        if ((i === "value" || i === "selected" || i === "checked" ? node[i] : oldVProps[i]) !== newVProps[i]) {
-          patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, mapf);
-        }
+        patchProperty(node, i, oldVProps[i], newVProps[i], listener, mapf);
       }
       if (!newVNode.keyed) {
         for (let i = 0; i <= oldTail && i <= newTail; i++) {
@@ -1407,7 +1406,7 @@
           );
         }
         for (let i = newTail + 1; i <= oldTail; i++) {
-          node.removeChild(oldVKids[i].html.node);
+          oldVKids[i].html.node.remove();
         }
       } else {
         let oldHead = 0;
@@ -1441,14 +1440,14 @@
           }
         } else if (newHead > newTail) {
           while (oldHead <= oldTail) {
-            node.removeChild(oldVKids[oldHead].html.node);
+            oldVKids[oldHead].html.node.remove();
             oldHead++;
           }
         } else {
-          const keyed2 = {};
+          const keyed = {};
           const newKeyed = {};
           for (let i = oldHead; i <= oldTail; i++) {
-            keyed2[oldVKids[i].key] = oldVKids[i].html;
+            keyed[oldVKids[i].key] = oldVKids[i].html;
           }
           while (newHead <= newTail) {
             const { key: oldKey, html: oldVKid } = oldVKids[oldHead] || { key: null, html: null };
@@ -1462,7 +1461,7 @@
               newKeyed[newKey] = true;
               oldHead++;
             } else {
-              const vkid = keyed2[newKey];
+              const vkid = keyed[newKey];
               if (vkid != null) {
                 patch(
                   node,
@@ -1480,9 +1479,9 @@
             }
             newHead++;
           }
-          for (let i in keyed2) {
+          for (let i in keyed) {
             if (!newKeyed[i]) {
-              node.removeChild(keyed2[i].node);
+              keyed[i].node.remove();
             }
           }
         }
@@ -1497,11 +1496,10 @@
         return true;
     return false;
   };
-  var evalMemo = (f, memo) => memo.reduce((g, v) => g(v), f);
   var getVNode = (newVNode, oldVNode) => {
     if (typeof newVNode.html.type === "function") {
       if (!oldVNode || oldVNode.memo == null || propsChanged(oldVNode.memo, newVNode.html.memo)) {
-        oldVNode = copyVNode(evalMemo(newVNode.html.type, newVNode.html.memo));
+        oldVNode = copyVNode(newVNode.html.type(...newVNode.html.memo));
         oldVNode.memo = newVNode.html.memo;
       }
       newVNode.html = oldVNode;
@@ -1512,39 +1510,40 @@
     ...vnode,
     children: vnode.children && vnode.children.map(({ key, html }) => ({ key, html: copyVNode(html) }))
   });
-  var getAction = (target5) => (type) => () => target5.actions[type];
-  var unsafePatch = (parent2) => (node) => (oldVDom) => (newVDom) => (listener) => () => patch(parent2, node, oldVDom, newVDom, (e) => listener(e)());
+  var getAction = (target5, type) => target5.actions[type];
+  var unsafePatch = patch;
   var unsafeLinkNode = (node) => (vdom) => {
     vdom.node = node;
     return vdom;
   };
 
   // output/Pha.Html.Core/foreign.js
-  var _h = (tag, ps, children2, keyed2 = false) => {
-    const style2 = {};
-    const props = { style: style2 };
-    const vdom = { tag, children: children2, props, node: null, keyed: keyed2 };
+  var _h = (tag, ps, children2, keyed = false) => {
+    const style = [];
+    const props = {};
+    const vdom = { tag, children: children2, props, node: null, keyed };
     const n = ps.length;
     for (let i = 0; i < n; i++) {
       const [t, k, v] = ps[i];
       if (t == 1)
         props[k] = v;
       else if (t === 2)
-        props.class = (props.class ? props.class + " " : "") + k;
+        props.class = props.class ? props.class + " " + k : k;
       else if (t === 3)
-        style2[k] = v;
+        style.push(k + ":" + v);
     }
+    props.style = style.join(";");
     return vdom;
   };
-  var elem2 = (tag) => (ps) => (children2) => _h(tag, ps, children2.map((html) => ({ key: null, html })));
+  var elemImpl = (tag, ps, children2) => _h(tag, ps, children2.map((html) => ({ key: null, html })));
   var createTextVNode = (text6) => ({
     tag: text6,
     props: {},
     children: [],
     type: 3
   });
-  var attr = (k) => (v) => [1, k, v];
-  var unsafeOnWithEffect = (k) => (v) => [1, "on" + k, v];
+  var attrImpl = (k, v) => [1, k, v];
+  var unsafeOnWithEffectImpl = (k, v) => [1, "on" + k, v];
   var text = createTextVNode;
 
   // output/Web.Event.Event/foreign.js
@@ -1568,6 +1567,25 @@
   // output/Web.Event.Event/index.js
   var currentTarget = function($5) {
     return toMaybe(_currentTarget($5));
+  };
+
+  // output/Pha.Html.Core/index.js
+  var unsafeOnWithEffect = function(name15) {
+    return function(handler) {
+      return unsafeOnWithEffectImpl(name15, handler);
+    };
+  };
+  var elem2 = function(name15) {
+    return function(attrs) {
+      return function(children2) {
+        return elemImpl(name15, attrs, children2);
+      };
+    };
+  };
+  var attr = function(key) {
+    return function(val) {
+      return attrImpl(key, val);
+    };
   };
 
   // output/Unsafe.Reference/foreign.js
@@ -1752,99 +1770,89 @@
   }
 
   // output/Pha.App/index.js
-  var $runtime_lazy2 = function(name15, moduleName, init2) {
-    var state3 = 0;
-    var val;
-    return function(lineNumber) {
-      if (state3 === 2)
-        return val;
-      if (state3 === 1)
-        throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state3 = 1;
-      val = init2();
-      state3 = 2;
-      return val;
-    };
-  };
-  var bind1 = /* @__PURE__ */ bind(bindEffect);
-  var unless2 = /* @__PURE__ */ unless(applicativeEffect);
+  var bind2 = /* @__PURE__ */ bind(bindEffect);
   var for_2 = /* @__PURE__ */ for_(applicativeEffect)(foldableMaybe);
+  var unless2 = /* @__PURE__ */ unless(applicativeEffect);
   var mapFlipped2 = /* @__PURE__ */ mapFlipped(functorEffect);
   var map5 = /* @__PURE__ */ map(functorEffect);
   var map1 = /* @__PURE__ */ map(functorMaybe);
-  var app$prime = function(v) {
-    var go2 = function(state3) {
-      return function(node) {
-        return function(vdom) {
-          var getState = read(state3);
-          var setState = function(newState) {
-            return function __do() {
-              var oldState = read(state3)();
-              return unless2(unsafeRefEq(oldState)(newState))(function __do2() {
-                write(newState)(state3)();
-                return render(v.view(newState))();
-              })();
-            };
-          };
-          var render = function(newVDom) {
-            return function __do() {
-              var oldVDom = read(vdom)();
-              var node1 = read(node)();
-              var pnode = parentNode(node1)();
-              return for_2(pnode)(function(pnode$prime) {
-                var vdom2 = copyVNode(newVDom);
-                return function __do2() {
-                  var node2 = unsafePatch(pnode$prime)(node1)(oldVDom)(vdom2)(listener)();
-                  write(node2)(node)();
-                  return write(vdom2)(vdom)();
-                };
-              })();
-            };
-          };
-          var listener = function(e) {
-            var v1 = type_(e);
-            return for_2(currentTarget(e))(function(target5) {
-              return function __do() {
-                var fn = getAction(target5)(v1)();
-                return dispatchEvent(e)(fn)();
-              };
-            });
-          };
-          var dispatchEvent = function(ev) {
-            return function(handler) {
-              return function __do() {
-                var msg$prime = handler(ev)();
-                return for_2(msg$prime)($lazy_dispatch(76))();
-              };
-            };
-          };
-          var $lazy_dispatch = $runtime_lazy2("dispatch", "Pha.App", function() {
-            return v.update({
-              get: getState,
-              put: function(s) {
-                return setState(s);
-              }
-            });
-          });
-          var dispatch = $lazy_dispatch(69);
-          return function __do() {
-            render(v.view(v.init.model))();
-            return for_2(v.init.msg)(dispatch)();
-          };
+  var getState = function(v) {
+    return read(v.state);
+  };
+  var dispatch = function(v) {
+    return v.update(v);
+  };
+  var dispatchEvent = function(iapp) {
+    return function(ev) {
+      return function(handler) {
+        return function __do() {
+          var msg$prime = handler(ev)();
+          return for_2(msg$prime)(dispatch(iapp))();
         };
       };
     };
+  };
+  var render = function(v) {
+    return function(newVDom) {
+      var listener = function(e) {
+        var v1 = type_(e);
+        return for_2(currentTarget(e))(function(target5) {
+          return function __do() {
+            var fn = getAction(target5, v1);
+            return dispatchEvent(v)(e)(fn)();
+          };
+        })();
+      };
+      return function __do() {
+        var oldVDom = read(v.vdom)();
+        var node1 = read(v.node)();
+        var pnode = parentNode(node1)();
+        return for_2(pnode)(function(pnode$prime) {
+          var vdom2 = copyVNode(newVDom);
+          return function __do2() {
+            var node2 = unsafePatch(pnode$prime, node1, oldVDom, vdom2, listener);
+            write(node2)(v.node)();
+            return write(vdom2)(v.vdom)();
+          };
+        })();
+      };
+    };
+  };
+  var setState = function(v) {
+    return function(newState) {
+      return function __do() {
+        var oldState = read(v.state)();
+        return unless2(unsafeRefEq(oldState)(newState))(function __do2() {
+          write(newState)(v.state)();
+          return render(v)(v.view(newState))();
+        })();
+      };
+    };
+  };
+  var app$prime = function(v) {
     return function __do() {
-      var parentNode2 = mapFlipped2(bind1(windowImpl)(document2))(toParentNode)();
+      var parentNode2 = mapFlipped2(bind2(windowImpl)(document2))(toParentNode)();
       var selected2 = map5(map1(toNode))(querySelector(v.selector)(parentNode2))();
       return for_2(selected2)(function(node_) {
         return function __do2() {
           var state3 = $$new(v.init.model)();
-          var emptyNode = mapFlipped2(bind1(mapFlipped2(bind1(windowImpl)(document2))(toDocument))(createTextNode("")))(toNode2)();
+          var emptyNode = mapFlipped2(bind2(mapFlipped2(bind2(windowImpl)(document2))(toDocument))(createTextNode("")))(toNode2)();
           appendChild(emptyNode)(node_)();
           var node = $$new(emptyNode)();
           var vdom = $$new(unsafeLinkNode(emptyNode)(text("")))();
-          return go2(state3)(node)(vdom)();
+          var subscriptions = $$new(empty4)();
+          var freshId = $$new(0)();
+          var iapp = {
+            view: v.view,
+            update: v.update,
+            state: state3,
+            node,
+            vdom,
+            subscriptions,
+            freshId
+          };
+          render(iapp)(v.view(v.init.model))();
+          return for_2(v.init.msg)(dispatch(iapp))();
         };
       })();
     };
@@ -1856,11 +1864,11 @@
         msg: Nothing.value
       },
       view: v.view,
-      update: function(v1) {
+      update: function(iapp) {
         return function(msg) {
           return function __do() {
-            var st = v1.get();
-            return v1.put(v.update(msg)(st))();
+            var st = getState(iapp)();
+            return setState(iapp)(v.update(msg)(st))();
           };
         };
       },
@@ -1882,19 +1890,19 @@
 
   // output/Pha.Html.Events/index.js
   var pure2 = /* @__PURE__ */ pure(applicativeEffect);
-  var bind2 = /* @__PURE__ */ bind(bindMaybe);
+  var bind3 = /* @__PURE__ */ bind(bindMaybe);
   var map6 = /* @__PURE__ */ map(functorEffect);
   var map12 = /* @__PURE__ */ map(functorFn);
   var on2 = unsafeOnWithEffect;
   var onValueChange = function(f) {
     var fn = function(ev) {
-      var v = bind2(currentTarget(ev))(fromEventTarget);
+      var v = bind3(currentTarget(ev))(fromEventTarget);
       if (v instanceof Just) {
         return map6(map12(Just.create)(f))(value3(v.value0));
       }
       ;
       if (v instanceof Nothing) {
-        var v1 = bind2(currentTarget(ev))(fromEventTarget2);
+        var v1 = bind3(currentTarget(ev))(fromEventTarget2);
         if (v1 instanceof Nothing) {
           return pure2(Nothing.value);
         }
@@ -1903,10 +1911,10 @@
           return map6(map12(Just.create)(f))(value10(v1.value0));
         }
         ;
-        throw new Error("Failed pattern match at Pha.Html.Events (line 67, column 17 - line 69, column 73): " + [v1.constructor.name]);
+        throw new Error("Failed pattern match at Pha.Html.Events (line 93, column 9 - line 95, column 63): " + [v1.constructor.name]);
       }
       ;
-      throw new Error("Failed pattern match at Pha.Html.Events (line 64, column 9 - line 69, column 73): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at Pha.Html.Events (line 90, column 5 - line 95, column 63): " + [v.constructor.name]);
     };
     return on2("change")(fn);
   };
@@ -1933,7 +1941,7 @@
     };
     return ChangeFahrenheit2;
   }();
-  var view = function(v) {
+  var view2 = function(v) {
     return div2([])([label4([])([input([type_18("text"), attr("size")("5"), onValueChange(ChangeCelsius.create), value12(v.celsius)]), span2([])([text("\xB0C")]), input([type_18("text"), attr("size")("5"), onValueChange(ChangeFahrenheit.create), value12(v.fahrenheit)]), span2([])([text("\xB0F")])])]);
   };
   var update = function(v) {
@@ -1967,7 +1975,7 @@
   };
   var main = /* @__PURE__ */ sandbox({
     init,
-    view,
+    view: view2,
     update,
     selector: "#root"
   });

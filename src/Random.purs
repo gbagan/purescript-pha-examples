@@ -1,7 +1,7 @@
 module Example.Random where
 import Prelude
 import Data.Int (toNumber)
-import Data.Array ((..), mapWithIndex, insertAt, foldl, sortWith)
+import Data.Array ((..), mapWithIndex, sortWith)
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as N
 import Data.Traversable (traverse)
@@ -102,6 +102,5 @@ main = app
   { init: {model, msg: Just RollDice}
   , view
   , update
-  , eval: identity
   , selector: "#root"
   }
